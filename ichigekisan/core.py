@@ -1,13 +1,14 @@
-import consts
-import ftp
-import scraping
-import mail
+import os
+from config import config
+from ftp import ConnectFtp
+from scraping import Scraping
+from mail import Mail
 from distutils.version import StrictVersion
 import re
 
 
 def current_version(ftp_dict, app_name):
-    con = ftp.ConnectFtp(ftp_dict, app_name)
+    con = ConnectFtp(ftp_dict, app_name)
     file_list = con.ftp_file_list()
     # リストで取得できたら
     if isinstance(file_list, list):
@@ -23,7 +24,7 @@ def current_version(ftp_dict, app_name):
 
 
 def latest_version(url):
-    scp = scraping.Scraping(url)
+    scp = Scraping(url)
     ver_dict = scp.fetch_version()
     return ver_dict
 
@@ -32,8 +33,8 @@ def create_body(ver_current, latest, app_name):
     # 最新版はdictかステータスコードで返ってくる
     ver_latest = latest['version'] if isinstance(latest, dict) else latest
 
-    body = f'Current Version : {ver_current}\n'\
-           f'Latest Version  : {ver_latest}\n\n'
+    body = (f'Current Version : {ver_current}\n'
+            f'Latest Version  : {ver_latest}\n\n')
 
     # バージョンに差異があればダウンロードリンク表示
     body += 'DownloadLink:{}'.format(latest['download_link']) if ver_current < ver_latest else ''
@@ -46,17 +47,19 @@ def create_body(ver_current, latest, app_name):
 
 
 def main():
+    current_dir = os.path.abspath(os.path.dirname(__file__))
+    cfg = config(current_dir)
     # バージョン確認するアプリ名
-    app_name = consts.URL_INFO['app_name']
+    app_name = cfg['url_info']['app_name']
 
     # FTP接続してバージョン取得
-    current = current_version(consts.FTP_INFO, app_name)
+    current = current_version(cfg['ftp_info'], app_name)
     # サイトからバージョン取得
-    latest = latest_version(consts.URL_INFO)
+    latest = latest_version(cfg['url_info'])
 
     # メール送信
     body = create_body(current, latest, app_name)
-    mailer = mail.Mail(consts.MAIL_INFO)
+    mailer = Mail(cfg['mail_info'])
     msg = mailer.create_message(body)
     mailer.send_mail(msg)
 

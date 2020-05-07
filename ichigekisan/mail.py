@@ -15,8 +15,8 @@ class Mail:
         return msg
 
     def send_mail(self, msg):
+        smtp_obj = smtplib.SMTP(self.smtp_dict['smtp_server'], self.smtp_dict['smtp_port'])
         try:
-            smtp_obj = smtplib.SMTP(self.smtp_dict['smtp_server'], self.smtp_dict['smtp_port'])
             smtp_obj.ehlo()
             smtp_obj.starttls()
             smtp_obj.login(self.smtp_dict['smtp_user'], self.smtp_dict['smtp_pass'])
