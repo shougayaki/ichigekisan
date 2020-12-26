@@ -8,15 +8,19 @@ class ConnectFtp:
 
     def ftp_file_list(self):
         try:
-            ftp = ftplib.FTP(self.ftp_dict['ftp_uri'], self.ftp_dict['ftp_user'], self.ftp_dict['ftp_pass'])
+            ftp = ftplib.FTP(
+                self.ftp_dict['ftp_uri'],
+                self.ftp_dict['ftp_user'],
+                self.ftp_dict['ftp_pass']
+            )
             if self.app_name in ftp.nlst('.'):
                 ftp.cwd(self.app_name)
                 files = ftp.nlst('.')
             else:
                 files = 'Not found [{}] directory on server.'.format(self.app_name)
         except ftplib.all_errors as e:
-            return e
-        finally:
+            return str(e)
+        else:
             ftp.quit()
 
         return files

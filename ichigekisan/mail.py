@@ -22,7 +22,7 @@ class Mail:
             smtp_obj.login(self.smtp_dict['smtp_user'], self.smtp_dict['smtp_pass'])
             smtp_obj.sendmail(self.smtp_dict['smtp_user'], self.smtp_dict['mail_to'], str(msg))
             return True
-        except smtplib.SMTPException:
-            return False
+        except smtplib.SMTPException as e:
+            return e
         finally:
             smtp_obj.close()
