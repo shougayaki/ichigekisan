@@ -10,7 +10,6 @@ class Scraping:
         ver_dict = {}
         try:
             res = requests.get(self.url_dict['url'], timeout=(3, 6))
-            # print(self.url_dict['url'], res)
             if res.status_code == 200:
                 soup = BeautifulSoup(res.content, 'html.parser')
                 download_url = self.url_dict['download_url']

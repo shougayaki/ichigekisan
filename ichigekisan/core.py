@@ -30,7 +30,7 @@ def latest_version(url):
 
 
 def create_body(ver_current, latest, app_name):
-    # 最新版はdictかステータスコードで返ってくる
+    # 最新版はdictで返ってくる。バージョン取れなかったらversionのvalueはNoneで返ってくる。
     ver_latest = latest['version'] if 'version' in latest else 'FAILED to fetch latest version.'
     body = (f'Current Version : {ver_current}\n'
             f'Latest Version  : {ver_latest}')
@@ -54,29 +54,29 @@ def create_body(ver_current, latest, app_name):
 
 
 def main():
-    current_dir = Path(__file__).resolve().parent
-    cfg = config(current_dir)
-    log = Logger(current_dir, 10)
-    log.logging('=== {} Started ==='.format(current_dir.name))
+    root_dir = Path(__file__).resolve().parents[1]
+    cfg = config()
+    log = Logger(root_dir, 10)
+    log.logging('=== {} Started ==='.format(root_dir.name))
     # バージョン確認するアプリ名
     app_name = cfg['url_info']['app_name']
 
     # FTP接続してバージョン取得
-    current = current_version(cfg['ftp_info'], app_name)
-    log.logging('Result to fetch current version : {}'.format(current))
+    ver_current = current_version(cfg['ftp_info'], app_name)
+    log.logging('Result to fetch current version : {}'.format(ver_current))
 
     # サイトからバージョン取得
-    latest = latest_version(cfg['url_info'])
-    log.logging('Result to fetch latest version: {}'.format(latest['version']))
+    ver_latest = latest_version(cfg['url_info'])
+    log.logging('Result to fetch latest version: {}'.format(ver_latest['version']))
 
     # メール送信
-    body = create_body(current, latest, app_name)
+    body = create_body(ver_current, ver_latest, app_name)
     mailer = Mail(cfg['mail_info'])
     msg = mailer.create_message(body)
     mail_result = mailer.send_mail(msg)
     log.logging('Result to send mail: {}'.format(mail_result))
 
-    log.logging('=== {} Stop ==='.format(current_dir.name))
+    log.logging('=== {} Stop ==='.format(root_dir.name))
 
 
 if __name__ == '__main__':

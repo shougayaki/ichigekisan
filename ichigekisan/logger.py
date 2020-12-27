@@ -3,16 +3,17 @@ from pathlib import Path
 
 
 class Logger:
-    def __init__(self, file_path, level, name=__name__,):
+    def __init__(self, root_dir, level, name=__name__,):
         self.logger = getLogger(name)
         self.logger.setLevel(level)
         self.level = level
         formatter = Formatter("[%(asctime)s] [%(process)d] [%(name)s] [%(levelname)s] %(message)s")
 
-        # file
-        file_path = Path(file_path)
-        dir_name = file_path.name
-        log_dir = Path.joinpath(Path(file_path).resolve().parents[0], 'log')
+        # /[root_dir]/log/[app_name]/[app_name].logに出力
+        root_dir = Path(root_dir)
+        dir_name = root_dir.name
+        log_dir = Path.joinpath(Path(root_dir).resolve(), 'log')
+        # logフォルダ無かったら作成
         if not log_dir.is_dir():
             Path.mkdir(log_dir)
         filename = '{}/{}.log'.format(log_dir, dir_name)
