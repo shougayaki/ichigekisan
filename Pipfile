@@ -9,6 +9,7 @@ verify_ssl = true
 python-dotenv = "*"
 beautifulsoup4 = "*"
 requests = "*"
+paramiko = "*"
 
 [requires]
 python_version = "3.8"

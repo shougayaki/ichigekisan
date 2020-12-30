@@ -5,11 +5,14 @@ from bs4 import BeautifulSoup
 class Scraping:
     def __init__(self, url_dict):
         self.url_dict = url_dict.copy()
+        self.ua = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+                   'AppleWebKit/537.36 (KHTML, like Gecko)'
+                   'Chrome/87.0.4280.88 Safari/537.36')
 
     def fetch_version(self):
         ver_dict = {}
         try:
-            res = requests.get(self.url_dict['url'], timeout=(3, 6))
+            res = requests.get(self.url_dict['url'], headers={'User-Agent': self.ua}, timeout=(3, 6))
             if res.status_code == 200:
                 soup = BeautifulSoup(res.content, 'html.parser')
                 download_url = self.url_dict['download_url']
