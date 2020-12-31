@@ -6,9 +6,7 @@
 
 ## .env例
 ```
-URL=http://blog.x-row.net/?p=2455
-APP_NAME=brynhildr
-DOWNLOAD_URL=http://blog.x-row.net/download/?file=brynhildr&ver=
+API_URL=http://example.com/brynhildr/api/
 
 FTP_HOST=192.168.1.*
 FTP_PORT=22
