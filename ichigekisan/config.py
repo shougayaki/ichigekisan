@@ -7,11 +7,7 @@ def config():
     dotenv_path = Path(__file__).resolve().parents[1].joinpath('.env')
     load_dotenv(dotenv_path)
     conf = {
-        'url_info': {
-            'url': os.environ.get('URL'),
-            'app_name': os.environ.get('APP_NAME'),
-            'download_url': os.environ.get('DOWNLOAD_URL')
-        },
+        'api_url': os.environ.get('API_URL'),
         'ftp_info': {
             'ftp_host': os.environ.get('FTP_HOST'),
             'ftp_port': int(os.environ.get('FTP_PORT')),

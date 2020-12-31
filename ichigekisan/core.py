@@ -1,11 +1,11 @@
+import re
 from pathlib import Path
 from config import config
 from logger import Logger
-from ftp import ConnectFtp
-from scraping import Scraping
-from mail import Mail
 from distutils.version import StrictVersion
-import re
+from ftp import ConnectFtp
+from app_info import AppInfo
+from mail import Mail
 
 
 def current_version(ftp):
@@ -20,12 +20,6 @@ def current_version(ftp):
         return current
     else:
         return ftp_res
-
-
-def latest_version(url):
-    scp = Scraping(url)
-    ver_dict = scp.fetch_version()
-    return ver_dict
 
 
 def create_body(ver_current, latest, app_name):
@@ -56,25 +50,29 @@ def main():
     root_dir = Path(__file__).resolve().parents[1]
     cfg = config()
     log = Logger(root_dir, 10)
+    version = AppInfo(cfg['api_url'])
     log.logging('=== {} Started ==='.format(root_dir.name))
-    # バージョン確認するアプリ名
-    app_name = cfg['url_info']['app_name']
 
-    # FTP接続してバージョン取得
-    ftp = ConnectFtp(cfg['ftp_info'], app_name)
-    ver_current = current_version(ftp)
-    log.logging('Result to fetch current version: {}'.format(ver_current))
+    # APIからアプリ情報取得
+    app_info = version.fetch_app_info()
+    if isinstance(app_info, dict):
+        # アプリ情報取得できたら名前と現在のバージョン取得
+        app_name = app_info['name']
+        ver_current = app_info['current_version']
+        log.logging('Result to fetch current version: {}'.format(ver_current))
 
-    # サイトからバージョン取得
-    ver_latest = latest_version(cfg['url_info'])
-    log.logging('Result to fetch latest version: {}'.format(ver_latest['version']))
+        # サイトからバージョン取得
+        ver_latest = version.fetch_latest_version(app_info)
+        log.logging('Result to fetch latest version: {}'.format(ver_latest['version']))
 
-    # メール送信
-    body = create_body(ver_current, ver_latest, app_name)
-    mailer = Mail(cfg['mail_info'])
-    msg = mailer.create_message(body)
-    mail_result = mailer.send_mail(msg)
-    log.logging('Result to send mail: {}'.format(mail_result))
+        # メール送信
+        body = create_body(ver_current, ver_latest, app_name)
+        mailer = Mail(cfg['mail_info'])
+        msg = mailer.create_message(body)
+        mail_result = mailer.send_mail(msg)
+        log.logging('Result to send mail: {}'.format(mail_result))
+    else:
+        log.logging('FAILED to fetch app info from [{}].'.format(cfg['api_url']))
 
     log.logging('=== {} Stop ==='.format(root_dir.name))
 

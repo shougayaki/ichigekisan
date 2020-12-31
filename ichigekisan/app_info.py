@@ -2,20 +2,31 @@ import requests
 from bs4 import BeautifulSoup
 
 
-class Scraping:
-    def __init__(self, url_dict):
-        self.url_dict = url_dict.copy()
+class AppInfo:
+    def __init__(self, api_url):
+        self.api_url = api_url
         self.ua = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
                    'AppleWebKit/537.36 (KHTML, like Gecko)'
                    'Chrome/87.0.4280.88 Safari/537.36')
 
-    def fetch_version(self):
+    def fetch_app_info(self):
+        try:
+            res = requests.get(self.api_url, headers={'User-Agent': self.ua}, timeout=(3, 6))
+            if res.status_code == 200:
+                app_info = res.json()
+            else:
+                app_info = 'Status Code: {}'.format(res.status_code)
+            return app_info
+        except Exception as e:
+            return e
+
+    def fetch_latest_version(self, app_info):
         ver_dict = {}
         try:
-            res = requests.get(self.url_dict['url'], headers={'User-Agent': self.ua}, timeout=(3, 6))
+            res = requests.get(app_info['url'], headers={'User-Agent': self.ua}, timeout=(3, 6))
             if res.status_code == 200:
                 soup = BeautifulSoup(res.content, 'html.parser')
-                download_url = self.url_dict['download_url']
+                download_url = app_info['download_url']
 
                 # aタグでリンクにDownloadURLを含んでいたらバージョンとDownloadURLをdictにして返す
                 for a in soup.find_all('a'):
