@@ -8,8 +8,8 @@ from distutils.version import StrictVersion
 import re
 
 
-def current_version(con):
-    ftp_res = con.ftp_file_list()
+def current_version(ftp):
+    ftp_res = ftp.file_list()
     # リストで取得できたら
     if isinstance(ftp_res, list):
         # [ver].txtファイルをバージョン表記ソートして、最大値(配列最後)を抜き出し
@@ -61,8 +61,8 @@ def main():
     app_name = cfg['url_info']['app_name']
 
     # FTP接続してバージョン取得
-    con = ConnectFtp(cfg['ftp_info'], app_name)
-    ver_current = current_version(con)
+    ftp = ConnectFtp(cfg['ftp_info'], app_name)
+    ver_current = current_version(ftp)
     log.logging('Result to fetch current version: {}'.format(ver_current))
 
     # サイトからバージョン取得

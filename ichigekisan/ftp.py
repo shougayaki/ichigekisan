@@ -6,8 +6,9 @@ class ConnectFtp:
         self.ftp_dict = ftp_dict.copy()
         self.app_name = app_name
 
-    def ftp_file_list(self):
+    def file_list(self):
         ssh = paramiko.SSHClient()
+        ssh.load_system_host_keys()
         try:
             # 秘密鍵が空ならパスワードを使用する
             if self.ftp_dict['private_key_file_path'] == '':
