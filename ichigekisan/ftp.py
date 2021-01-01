@@ -1,7 +1,7 @@
 import paramiko
 
 
-class ConnectFtp:
+class Ftp:
     def __init__(self, ftp_dict, app_name):
         self.ftp_dict = ftp_dict.copy()
         self.app_name = app_name

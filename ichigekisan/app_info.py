@@ -18,7 +18,7 @@ class AppInfo:
                 app_info = 'Status Code: {}'.format(res.status_code)
             return app_info
         except Exception as e:
-            return e
+            return str(e)
 
     def fetch_latest_version(self, app_info):
         ver_dict = {}
