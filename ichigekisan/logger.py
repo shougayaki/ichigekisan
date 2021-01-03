@@ -3,11 +3,9 @@ from pathlib import Path
 
 
 class Logger:
-    def __init__(self, root_dir, level, name=__name__,):
+    def __init__(self, root_dir, name=__name__,):
         self.logger = getLogger(name)
-        self.logger.setLevel(level)
-        self.level = level
-        formatter = Formatter("[%(asctime)s] [%(process)d] [%(name)s] [%(levelname)s] %(message)s")
+        formatter = Formatter("[%(asctime)s] [%(process)d] [%(levelname)s] %(message)s")
 
         # /[root_dir]/log/[app_name]/[app_name].logに出力
         root_dir = Path(root_dir)
@@ -24,18 +22,22 @@ class Logger:
             backupCount=3,
             encoding='utf-8'
         )
-        handler.setLevel(level)
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
-    def logging(self, msg):
-        if self.level == 10:
+    def logging(self, level, msg):
+        if level == 'debug':
+            self.logger.setLevel(10)
             self.logger.debug(msg)
-        elif self.level == 20:
+        elif level == 'info':
+            self.logger.setLevel(20)
             self.logger.info(msg)
-        elif self.level == 30:
+        elif level == 'warning':
+            self.logger.setLevel(30)
             self.logger.warning(msg)
-        elif self.level == 40:
+        elif level == 'error':
+            self.logger.setLevel(40)
             self.logger.error(msg)
-        elif self.level == 50:
+        elif level == 'critical':
+            self.logger.setLevel(50)
             self.logger.critical(msg)

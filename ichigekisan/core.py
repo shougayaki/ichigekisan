@@ -3,7 +3,6 @@ from pathlib import Path
 from config import config
 from logger import Logger
 from distutils.version import StrictVersion
-from ftp import Ftp
 from app_info import AppInfo
 from mail import Mail
 
@@ -40,21 +39,28 @@ def create_mail_content(**kwargs):
 def main():
     root_dir = Path(__file__).resolve().parents[1]
     cfg = config()
-    log = Logger(root_dir, 10)
+    log = Logger(root_dir)
     info = AppInfo(cfg['api_url'])
-    log.logging('=== {} Started ==='.format(root_dir.name))
+    level = 'info'
+    log.logging(level, '=== {} Started ==='.format(root_dir.name))
 
     # APIからアプリ情報取得
+    log.logging(level, 'Start to fetch AppInfo from [{}]'.format(cfg['api_url']))
     app_info = info.fetch_app_info()
     if isinstance(app_info, dict):
         # アプリ情報取得できたら現在のバージョン取得
         ver_current = app_info['current_version']
-        log.logging('Result to fetch current version: {}'.format(ver_current))
+        log.logging(level, 'Result to fetch current version: {}'.format(ver_current))
 
         # サイトからバージョン取得
         latest = info.fetch_latest_version(app_info)
-        ver_latest = latest['version'] if latest['download_link'] is not None else 'FAILED to fetch latest version.'
-        log.logging('Result to fetch latest version: {}'.format(ver_latest))
+        if latest['download_link'] is not None:
+            level = 'info'
+            ver_latest = latest['version']
+        else:
+            level = 'error'
+            ver_latest = 'FAILED to fetch latest version'
+        log.logging(level, 'Result to fetch latest version: {}'.format(ver_latest))
 
         is_updated = False
         try:
@@ -63,6 +69,8 @@ def main():
             pass
 
         # メール送信
+        level = 'info'
+        log.logging(level, 'Start to send mail')
         mail_parts = {
             'app_name': app_info['name'],
             'ver_current': ver_current,
@@ -74,12 +82,15 @@ def main():
         mailer = Mail(cfg['mail_info'])
         msg = mailer.create_message(mail_content)
         mail_result = mailer.send_mail(msg)
-        log.logging('Result to send mail: {}'.format(mail_result))
+        level = 'info' if mail_result['result'] else 'error'
+        log.logging(level, 'Result to send mail: {}'.format(mail_result['msg']))
     else:
-        log.logging('FAILED to fetch app info from [{}]'.format(cfg['api_url']))
-        log.logging('Error: {}'.format(app_info))
+        level = 'error'
+        log.logging(level, 'FAILED to fetch AppInfo from [{}]'.format(cfg['api_url']))
+        log.logging(level, 'Error: {}'.format(app_info))
 
-    log.logging('=== {} Stop ==='.format(root_dir.name))
+    level = 'info'
+    log.logging(level, '=== {} Stop ==='.format(root_dir.name))
 
 
 if __name__ == '__main__':

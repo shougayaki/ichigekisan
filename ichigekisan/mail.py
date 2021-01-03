@@ -1,3 +1,5 @@
+import sys
+from pathlib import Path
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import formatdate
@@ -21,8 +23,11 @@ class Mail:
             smtp_obj.starttls()
             smtp_obj.login(self.smtp_dict['smtp_user'], self.smtp_dict['smtp_pass'])
             smtp_obj.sendmail(self.smtp_dict['smtp_user'], self.smtp_dict['mail_to'], str(msg))
-            return True
-        except smtplib.SMTPException as e:
-            return e
+            return {'result': True, 'msg': 'Mail Send Succeeded'}
+        except Exception as e:
+            # エラー内容、エラーが発生したファイル、エラーが発生した行数を取得
+            exc_type, _, exc_tb = sys.exc_info()
+            file_name = Path(exc_tb.tb_frame.f_code.co_filename).name
+            return {'result': False, 'msg': '{}<{}><{}: line {}>'.format(exc_type, e, file_name, exc_tb.tb_lineno)}
         finally:
             smtp_obj.close()
