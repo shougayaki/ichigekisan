@@ -53,13 +53,10 @@ def main():
         log.logging(level, 'Result to fetch current version: {}'.format(ver_current))
 
         # サイトからバージョン取得
+        log.logging(level, 'Start to fetch latest version from [{}]'.format(app_info['url']))
         latest = info.fetch_latest_version(app_info)
-        if latest['download_link'] is not None:
-            level = 'info'
-            ver_latest = latest['version']
-        else:
-            level = 'error'
-            ver_latest = 'FAILED to fetch latest version'
+        ver_latest = latest['version']
+        level = 'info' if latest['download_link'] is not None else 'error'
         log.logging(level, 'Result to fetch latest version: {}'.format(ver_latest))
 
         is_updated = False
