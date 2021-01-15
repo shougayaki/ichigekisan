@@ -1,19 +1,12 @@
 # ichigekisan
 - サイトで配布されているアプリケーションのバージョン
-- FTPサーバー上に置いているアプリケーションのバージョン(txtファイルのファイル名)
+- 自身で用意したAPIから取ってきたアプリケーションのバージョン
 
 を比較し、メールで通知する。
 
 ## .env例
 ```
 API_URL=http://example.com/brynhildr/api/
-
-FTP_HOST=192.168.1.*
-FTP_PORT=22
-FTP_USER=username
-FTP_PASS=password
-PRIVATE_KEY_FILE_PATH=${USERPROFILE}\.ssh\id_rsa
-TARGET_DIRECTORY=/share
 
 SMTP_SERVER=smtp.gmail.com
 SMTP_PORT=587
@@ -22,31 +15,21 @@ SMTP_PASS=password
 MAIL_TO=sendto@gmail.com
 ```
 
-### FTPの認証について
-PRIVATE_KEY_FILE_PATHが空の場合(`PRIVATE_KEY_FILE_PATH=`)  
-FTP_PASSで認証を行う。
+## API
+適当なところに以下のようなファイルを置いておいて、[.env](##.env例)のAPI_URLから引っ張ってくる。  
+current_version箇所はメンテが必要。
 
-### PRIVATE_KEY_FILE_PATH例
-- Windowsの場合 
-  PRIVATE_KEY_FILE_PATH=${USERPROFILE}\.ssh\id_rsa
-  
-- Windows以外の場合
-  PRIVATE_KEY_FILE_PATH=${HOME}/.ssh/id_rsa
-
-たぶん上記のように「${USERPROFILE} or ${HOME}」とセパレータを変える必要あり。
-Macでは未確認。
-
-## FTPサーバー
-ファイル置き場は任意の場所でOK。
-.env例では`TARGET_DIRECTORY`が`/share`なので、下記の構成にしておく。
-
-share  
-　└─ brynhildr  
-　　　├── *.*.*.txt  
-　　　├── brynhildr.dll  
-　　　└── brynhildr.exe  
-
-txtファイルは空でいいので、ファイル名をバージョン表記にしておく。
+```php:index.php
+<?php
+$array = [
+    'name' => 'brynhildr',
+    'url' => 'http://blog.x-row.net/?p=2455',
+    'current_version' => '2.6.0',
+    'download_url' => 'http://blog.x-row.net/download/?file=brynhildr&ver='
+];
+header("Content-Type: application/json; charset=utf-8");
+echo json_encode($array);
+```
 
 ## cryptographyインストール
 paramikoインストール時にインストールされるcryptographyのインストールに失敗することあり。

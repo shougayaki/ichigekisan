@@ -8,14 +8,6 @@ def config():
     load_dotenv(dotenv_path)
     conf = {
         'api_url': os.environ.get('API_URL'),
-        'ftp_info': {
-            'ftp_host': os.environ.get('FTP_HOST'),
-            'ftp_port': int(os.environ.get('FTP_PORT')),
-            'ftp_user': os.environ.get('FTP_USER'),
-            'ftp_pass': os.environ.get('FTP_PASS'),
-            'private_key_file_path': os.environ.get('PRIVATE_KEY_FILE_PATH'),
-            'target_directory': os.environ.get('TARGET_DIRECTORY')
-        },
         'mail_info': {
             'smtp_server': os.environ.get('SMTP_SERVER'),
             'smtp_port': os.environ.get('SMTP_PORT'),
