@@ -30,11 +30,3 @@ $array = [
 header("Content-Type: application/json; charset=utf-8");
 echo json_encode($array);
 ```
-
-## cryptographyインストール
-paramikoインストール時にインストールされるcryptographyのインストールに失敗することあり。
-以下を実行してからインストールする。
-`sudo apt-get install build-essential libssl-dev libffi-dev python3-dev`
-
-参考：
-https://cryptography.io/en/latest/installation.html
