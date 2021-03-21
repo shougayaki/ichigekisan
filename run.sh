@@ -1,3 +1,3 @@
 #!/bin/bash
 cd `dirname $0`
-pipenv run ichigekisan
+/home/ubuntu/.local/bin/pipenv run ichigekisan
